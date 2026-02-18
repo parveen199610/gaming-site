@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>🔥 Pro Gaming Zone 🔥</title>
+<style>
+body{
+  background:#0f0f0f;
+  color:white;
+  text-align:center;
+  font-family:Arial;
+}
+button{
+  padding:10px 20px;
+  margin:10px;
+  background:lime;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+}
+canvas{
+  background:black;
+  margin-top:20px;
+}
+</style>
+</head>
+<body>
+
+<h1>🎮 Pro Gaming Zone 🎮</h1>
+
+<button onclick="startGame(1)">Snake Game</button>
+<button onclick="startGame(2)">Ball Bounce</button>
+<button onclick="startGame(3)">Click Speed</button>
+
+<br>
+<canvas id="gameCanvas" width="400" height="400"></canvas>
+<p>Score: <span id="score">0</span></p>
+
+<script>
+var canvas=document.getElementById("gameCanvas");
+var ctx=canvas.getContext("2d");
+var score=0;
+var gameInterval;
+
+function startGame(type){
+clearInterval(gameInterval);
+score=0;
+document.getElementById("score").innerHTML=0;
+
+if(type==1) snakeGame();
+if(type==2) ballGame();
+if(type==3) clickGame();
+}
+
+function ballGame(){
+var x=200,y=200,dx=3,dy=3;
+gameInterval=setInterval(function(){
+ctx.clearRect(0,0,400,400);
+ctx.fillStyle="red";
+ctx.beginPath();
+ctx.arc(x,y,20,0,Math.PI*2);
+ctx.fill();
+x+=dx; y+=dy;
+if(x<20||x>380) dx=-dx;
+if(y<20||y>380) dy=-dy;
+score++;
+document.getElementById("score").innerHTML=score;
+},20);
+}
+
+function clickGame(){
+canvas.onclick=function(){
+score++;
+document.getElementById("score").innerHTML=score;
+}
+}
+
+function snakeGame(){
+var box=20;
+var snake=[{x:200,y:200}];
+var food={x:100,y:100};
+var dx=box,dy=0;
+
+document.onkeydown=function(e){
+if(e.key=="ArrowLeft"&&dx==0){dx=-box;dy=0;}
+if(e.key=="ArrowRight"&&dx==0){dx=box;dy=0;}
+if(e.key=="ArrowUp"&&dy==0){dx=0;dy=-box;}
+if(e.key=="ArrowDown"&&dy==0){dx=0;dy=box;}
+};
+
+gameInterval=setInterval(function(){
+ctx.clearRect(0,0,400,400);
+
+ctx.fillStyle="green";
+for(var i=0;i<snake.length;i++){
+ctx.fillRect(snake[i].x,snake[i].y,box,box);
+}
+
+ctx.fillStyle="red";
+ctx.fillRect(food.x,food.y,box,box);
+
+var headX=snake[0].x+dx;
+var headY=snake[0].y+dy;
+
+if(headX==food.x && headY==food.y){
+score++;
+document.getElementById("score").innerHTML=score;
+food={
+x:Math.floor(Math.random()*20)*box,
+y:Math.floor(Math.random()*20)*box
+};
+}else{
+snake.pop();
+}
+
+if(headX<0||headX>=400||headY<0||headY>=400){
+alert("Game Over");
+clearInterval(gameInterval);
+}
+
+snake.unshift({x:headX,y:headY});
+},100);
+}
+</script>
+
+</body>
+</html>
