@@ -1,47 +1,63 @@
-body{
-margin:0;
-font-family:Arial;
-background:#0f0f0f;
-color:white;
-text-align:center;
+var canvas=document.getElementById("gameCanvas");
+var ctx=canvas.getContext("2d");
+var score=0;
+var interval;
+
+function updateScore(){
+document.getElementById("score").innerHTML=score;
 }
 
-header{
-padding:20px;
-font-size:28px;
-background:black;
-box-shadow:0 0 20px lime;
+function ballGame(){
+clearInterval(interval);
+score=0;
+var x=200,y=200,dx=4,dy=4;
+
+interval=setInterval(function(){
+ctx.clearRect(0,0,400,400);
+ctx.fillStyle="red";
+ctx.beginPath();
+ctx.arc(x,y,20,0,Math.PI*2);
+ctx.fill();
+x+=dx;y+=dy;
+if(x<20||x>380) dx=-dx;
+if(y<20||y>380) dy=-dy;
+score++;
+updateScore();
+},20);
 }
 
-.menu{
-margin:20px;
+function clickGame(){
+clearInterval(interval);
+score=0;
+canvas.onclick=function(){
+score++;
+updateScore();
+}
 }
 
-.menu button{
-padding:12px 20px;
-margin:8px;
-background:lime;
-border:none;
-cursor:pointer;
-font-weight:bold;
-border-radius:5px;
-transition:0.3s;
-}
+function targetGame(){
+clearInterval(interval);
+score=0;
+var tx=100,ty=100;
 
-.menu button:hover{
-background:white;
-}
+interval=setInterval(function(){
+ctx.clearRect(0,0,400,400);
+ctx.fillStyle="yellow";
+ctx.beginPath();
+ctx.arc(tx,ty,20,0,Math.PI*2);
+ctx.fill();
+},30);
 
-canvas{
-background:black;
-border:2px solid lime;
-margin-top:20px;
+canvas.onclick=function(e){
+var rect=canvas.getBoundingClientRect();
+var x=e.clientX-rect.left;
+var y=e.clientY-rect.top;
+var dist=Math.sqrt((x-tx)(x-tx)+(y-ty)(y-ty));
+if(dist<20){
+score++;
+tx=Math.random()*360+20;
+ty=Math.random()*360+20;
+updateScore();
 }
-
-.ad-box{
-margin:20px auto;
-padding:20px;
-width:80%;
-background:#1a1a1a;
-border:1px dashed gray;
+}
 }
