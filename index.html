@@ -1,29 +1,259 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>🔥 Ultimate Gaming Portal 🔥</title>
+<title>🔥 Mega Gaming Hub 🔥</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0f0f0f;
+color:white;
+text-align:center;
+}
+h1{
+padding:20px;
+background:black;
+box-shadow:0 0 20px lime;
+}
+.menu{
+margin:15px;
+}
+.menu button{
+padding:10px 15px;
+margin:5px;
+background:lime;
+border:none;
+cursor:pointer;
+font-weight:bold;
+border-radius:4px;
+}
+canvas{
+background:black;
+border:2px solid lime;
+margin-top:15px;
+}
+</style>
 </head>
 <body>
 
-<header>🎮 Ultimate Gaming Portal 🎮</header>
+<h1>🎮 Mega Gaming Hub 🎮</h1>
 
 <div class="menu">
-<button onclick="ballGame()">Ball Bounce</button>
-<button onclick="clickGame()">Click Speed</button>
-<button onclick="targetGame()">Target Shoot</button>
-</div>
-
-<div class="ad-box">
-Google AdSense Ad Space
+<button onclick="ballGame()">1 Ball</button>
+<button onclick="clickGame()">2 Click</button>
+<button onclick="targetGame()">3 Target</button>
+<button onclick="colorGame()">4 Color</button>
+<button onclick="randomScore()">5 Lucky</button>
+<button onclick="snakeGame()">6 Snake</button>
+<button onclick="boxGame()">7 Catch</button>
+<button onclick="timerGame()">8 Timer</button>
+<button onclick="moveDot()">9 Move Dot</button>
+<button onclick="rainGame()">10 Rain</button>
 </div>
 
 <canvas id="gameCanvas" width="400" height="400"></canvas>
-
 <p>Score: <span id="score">0</span></p>
 
-<script src="script.js"></script>
+<script>
+var canvas=document.getElementById("gameCanvas");
+var ctx=canvas.getContext("2d");
+var score=0;
+var interval;
+
+function updateScore(){
+document.getElementById("score").innerHTML=score;
+}
+
+function clearGame(){
+clearInterval(interval);
+canvas.onclick=null;
+document.onkeydown=null;
+ctx.clearRect(0,0,400,400);
+score=0;
+updateScore();
+}
+
+/* 1 Ball Bounce */
+function ballGame(){
+clearGame();
+var x=200,y=200,dx=4,dy=4;
+interval=setInterval(function(){
+ctx.clearRect(0,0,400,400);
+ctx.fillStyle="red";
+ctx.beginPath();
+ctx.arc(x,y,20,0,Math.PI*2);
+ctx.fill();
+x+=dx;y+=dy;
+if(x<20||x>380) dx=-dx;
+if(y<20||y>380) dy=-dy;
+score++;
+updateScore();
+},20);
+}
+
+/* 2 Click Speed */
+function clickGame(){
+clearGame();
+canvas.onclick=function(){
+score++;
+updateScore();
+}
+}
+
+/* 3 Target Shoot */
+function targetGame(){
+clearGame();
+var tx=100,ty=100;
+interval=setInterval(function(){
+ctx.clearRect(0,0,400,400);
+ctx.fillStyle="yellow";
+ctx.beginPath();
+ctx.arc(tx,ty,20,0,Math.PI*2);
+ctx.fill();
+},30);
+
+canvas.onclick=function(e){
+var rect=canvas.getBoundingClientRect();
+var x=e.clientX-rect.left;
+var y=e.clientY-rect.top;
+if(Math.hypot(x-tx,y-ty)<20){
+score++;
+tx=Math.random()*360+20;
+ty=Math.random()*360+20;
+updateScore();
+}
+}
+}
+
+/* 4 Color Click */
+function colorGame(){
+clearGame();
+canvas.onclick=function(){
+ctx.fillStyle="rgb("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+")";
+ctx.fillRect(0,0,400,400);
+score++;
+updateScore();
+}
+}
+
+/* 5 Lucky Random */
+function randomScore(){
+clearGame();
+score=Math.floor(Math.random()*100);
+updateScore();
+}
+
+/* 6 Snake */
+function snakeGame(){
+clearGame();
+var box=20;
+var snake=[{x:200,y:200}];
+var food={x:100,y:100};
+var dx=box,dy=0;
+
+document.onkeydown=function(e){
+if(e.key=="ArrowLeft"&&dx==0){dx=-box;dy=0;}
+if(e.key=="ArrowRight"&&dx==0){dx=box;dy=0;}
+if(e.key=="ArrowUp"&&dy==0){dx=0;dy=-box;}
+if(e.key=="ArrowDown"&&dy==0){dx=0;dy=box;}
+};
+
+interval=setInterval(function(){
+ctx.clearRect(0,0,400,400);
+ctx.fillStyle="green";
+snake.forEach(s=>ctx.fillRect(s.x,s.y,box,box));
+ctx.fillStyle="red";
+ctx.fillRect(food.x,food.y,box,box);
+var headX=snake[0].x+dx;
+var headY=snake[0].y+dy;
+if(headX==food.x&&headY==food.y){
+score++;updateScore();
+food={x:Math.floor(Math.random()*20)*box,
+y:Math.floor(Math.random()*20)*box};
+}else{
+snake.pop();
+}
+if(headX<0||headX>=400||headY<0||headY>=400){
+clearGame();
+alert("Game Over");
+}
+snake.unshift({x:headX,y:headY});
+},100);
+}
+
+/* 7 Catch Box */
+function boxGame(){
+clearGame();
+var bx=100,by=100;
+interval=setInterval(function(){
+ctx.clearRect(0,0,400,400);
+ctx.fillStyle="blue";
+ctx.fillRect(bx,by,40,40);
+},30);
+canvas.onclick=function(e){
+var rect=canvas.getBoundingClientRect();
+var x=e.clientX-rect.left;
+var y=e.clientY-rect.top;
+if(x>bx&&x<bx+40&&y>by&&y<by+40){
+score++;updateScore();
+bx=Math.random()*360;
+by=Math.random()*360;
+}
+}
+}
+
+/* 8 Timer Score */
+function timerGame(){
+clearGame();
+var time=10;
+interval=setInterval(function(){
+time--;
+score++;
+updateScore();
+if(time<=0){
+clearInterval(interval);
+alert("Time Over! Score: "+score);
+}
+},1000);
+}
+
+/* 9 Move Dot */
+function moveDot(){
+clearGame();
+var x=200,y=200;
+document.onkeydown=function(e){
+ctx.clearRect(0,0,400,400);
+if(e.key=="ArrowLeft")x-=10;
+if(e.key=="ArrowRight")x+=10;
+if(e.key=="ArrowUp")y-=10;
+if(e.key=="ArrowDown")y+=10;
+ctx.fillStyle="white";
+ctx.beginPath();
+ctx.arc(x,y,10,0,Math.PI*2);
+ctx.fill();
+score++;
+updateScore();
+}
+}
+
+/* 10 Rain Game */
+function rainGame(){
+clearGame();
+var drops=[];
+interval=setInterval(function(){
+ctx.clearRect(0,0,400,400);
+if(Math.random()<0.2)drops.push({x:Math.random()*400,y:0});
+ctx.fillStyle="cyan";
+drops.forEach(d=>{
+d.y+=5;
+ctx.fillRect(d.x,d.y,5,10);
+});
+score++;
+updateScore();
+},50);
+}
+</script>
 
 </body>
 </html>
