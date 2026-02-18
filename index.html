@@ -1,124 +1,124 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>🔥 Pro Gaming Zone 🔥</title>
+<title>🔥 Elite Gaming Hub 🔥</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body{
-  background:#0f0f0f;
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#0f0f0f,#1a1a1a);
   color:white;
   text-align:center;
-  font-family:Arial;
 }
-button{
-  padding:10px 20px;
+h1{
+  padding:20px;
+  font-size:32px;
+  text-shadow:0 0 15px lime;
+}
+.menu button{
+  padding:12px 25px;
   margin:10px;
-  background:lime;
   border:none;
-  cursor:pointer;
+  background:lime;
+  color:black;
   font-weight:bold;
+  cursor:pointer;
+  border-radius:5px;
+  transition:0.3s;
+}
+.menu button:hover{
+  background:white;
 }
 canvas{
   background:black;
   margin-top:20px;
+  border:2px solid lime;
 }
 </style>
 </head>
 <body>
 
-<h1>🎮 Pro Gaming Zone 🎮</h1>
+<h1>🎮 Elite Gaming Hub 🎮</h1>
 
-<button onclick="startGame(1)">Snake Game</button>
-<button onclick="startGame(2)">Ball Bounce</button>
-<button onclick="startGame(3)">Click Speed</button>
+<div class="menu">
+<button onclick="ballGame()">Ball Bounce</button>
+<button onclick="clickGame()">Click Speed</button>
+<button onclick="targetGame()">Target Shoot</button>
+</div>
 
-<br>
 <canvas id="gameCanvas" width="400" height="400"></canvas>
 <p>Score: <span id="score">0</span></p>
+<p>High Score: <span id="highscore">0</span></p>
 
 <script>
 var canvas=document.getElementById("gameCanvas");
 var ctx=canvas.getContext("2d");
 var score=0;
-var gameInterval;
+var highscore=localStorage.getItem("highscore")||0;
+document.getElementById("highscore").innerHTML=highscore;
+var interval;
 
-function startGame(type){
-clearInterval(gameInterval);
-score=0;
-document.getElementById("score").innerHTML=0;
-
-if(type==1) snakeGame();
-if(type==2) ballGame();
-if(type==3) clickGame();
+function updateScore(){
+document.getElementById("score").innerHTML=score;
+if(score>highscore){
+highscore=score;
+localStorage.setItem("highscore",highscore);
+document.getElementById("highscore").innerHTML=highscore;
+}
 }
 
 function ballGame(){
-var x=200,y=200,dx=3,dy=3;
-gameInterval=setInterval(function(){
+clearInterval(interval);
+score=0;
+var x=200,y=200,dx=4,dy=4;
+interval=setInterval(function(){
 ctx.clearRect(0,0,400,400);
 ctx.fillStyle="red";
 ctx.beginPath();
 ctx.arc(x,y,20,0,Math.PI*2);
 ctx.fill();
-x+=dx; y+=dy;
+x+=dx;y+=dy;
 if(x<20||x>380) dx=-dx;
 if(y<20||y>380) dy=-dy;
 score++;
-document.getElementById("score").innerHTML=score;
+updateScore();
 },20);
 }
 
 function clickGame(){
+clearInterval(interval);
+score=0;
 canvas.onclick=function(){
 score++;
-document.getElementById("score").innerHTML=score;
+updateScore();
 }
 }
 
-function snakeGame(){
-var box=20;
-var snake=[{x:200,y:200}];
-var food={x:100,y:100};
-var dx=box,dy=0;
-
-document.onkeydown=function(e){
-if(e.key=="ArrowLeft"&&dx==0){dx=-box;dy=0;}
-if(e.key=="ArrowRight"&&dx==0){dx=box;dy=0;}
-if(e.key=="ArrowUp"&&dy==0){dx=0;dy=-box;}
-if(e.key=="ArrowDown"&&dy==0){dx=0;dy=box;}
-};
-
-gameInterval=setInterval(function(){
+function targetGame(){
+clearInterval(interval);
+score=0;
+var tx=100,ty=100;
+interval=setInterval(function(){
 ctx.clearRect(0,0,400,400);
+ctx.fillStyle="yellow";
+ctx.beginPath();
+ctx.arc(tx,ty,20,0,Math.PI*2);
+ctx.fill();
+},30);
 
-ctx.fillStyle="green";
-for(var i=0;i<snake.length;i++){
-ctx.fillRect(snake[i].x,snake[i].y,box,box);
-}
-
-ctx.fillStyle="red";
-ctx.fillRect(food.x,food.y,box,box);
-
-var headX=snake[0].x+dx;
-var headY=snake[0].y+dy;
-
-if(headX==food.x && headY==food.y){
+canvas.onclick=function(e){
+var rect=canvas.getBoundingClientRect();
+var x=e.clientX-rect.left;
+var y=e.clientY-rect.top;
+var dist=Math.sqrt((x-tx)(x-tx)+(y-ty)(y-ty));
+if(dist<20){
 score++;
-document.getElementById("score").innerHTML=score;
-food={
-x:Math.floor(Math.random()*20)*box,
-y:Math.floor(Math.random()*20)*box
-};
-}else{
-snake.pop();
+tx=Math.random()*360+20;
+ty=Math.random()*360+20;
+updateScore();
 }
-
-if(headX<0||headX>=400||headY<0||headY>=400){
-alert("Game Over");
-clearInterval(gameInterval);
 }
-
-snake.unshift({x:headX,y:headY});
-},100);
 }
 </script>
 
