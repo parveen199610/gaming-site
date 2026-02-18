@@ -1,45 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>🔥 Elite Gaming Hub 🔥</title>
+<title>🔥 Ultimate Gaming Portal 🔥</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:linear-gradient(135deg,#0f0f0f,#1a1a1a);
-  color:white;
-  text-align:center;
-}
-h1{
-  padding:20px;
-  font-size:32px;
-  text-shadow:0 0 15px lime;
-}
-.menu button{
-  padding:12px 25px;
-  margin:10px;
-  border:none;
-  background:lime;
-  color:black;
-  font-weight:bold;
-  cursor:pointer;
-  border-radius:5px;
-  transition:0.3s;
-}
-.menu button:hover{
-  background:white;
-}
-canvas{
-  background:black;
-  margin-top:20px;
-  border:2px solid lime;
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>🎮 Elite Gaming Hub 🎮</h1>
+<header>🎮 Ultimate Gaming Portal 🎮</header>
 
 <div class="menu">
 <button onclick="ballGame()">Ball Bounce</button>
@@ -47,80 +15,15 @@ canvas{
 <button onclick="targetGame()">Target Shoot</button>
 </div>
 
+<div class="ad-box">
+Google AdSense Ad Space
+</div>
+
 <canvas id="gameCanvas" width="400" height="400"></canvas>
+
 <p>Score: <span id="score">0</span></p>
-<p>High Score: <span id="highscore">0</span></p>
 
-<script>
-var canvas=document.getElementById("gameCanvas");
-var ctx=canvas.getContext("2d");
-var score=0;
-var highscore=localStorage.getItem("highscore")||0;
-document.getElementById("highscore").innerHTML=highscore;
-var interval;
-
-function updateScore(){
-document.getElementById("score").innerHTML=score;
-if(score>highscore){
-highscore=score;
-localStorage.setItem("highscore",highscore);
-document.getElementById("highscore").innerHTML=highscore;
-}
-}
-
-function ballGame(){
-clearInterval(interval);
-score=0;
-var x=200,y=200,dx=4,dy=4;
-interval=setInterval(function(){
-ctx.clearRect(0,0,400,400);
-ctx.fillStyle="red";
-ctx.beginPath();
-ctx.arc(x,y,20,0,Math.PI*2);
-ctx.fill();
-x+=dx;y+=dy;
-if(x<20||x>380) dx=-dx;
-if(y<20||y>380) dy=-dy;
-score++;
-updateScore();
-},20);
-}
-
-function clickGame(){
-clearInterval(interval);
-score=0;
-canvas.onclick=function(){
-score++;
-updateScore();
-}
-}
-
-function targetGame(){
-clearInterval(interval);
-score=0;
-var tx=100,ty=100;
-interval=setInterval(function(){
-ctx.clearRect(0,0,400,400);
-ctx.fillStyle="yellow";
-ctx.beginPath();
-ctx.arc(tx,ty,20,0,Math.PI*2);
-ctx.fill();
-},30);
-
-canvas.onclick=function(e){
-var rect=canvas.getBoundingClientRect();
-var x=e.clientX-rect.left;
-var y=e.clientY-rect.top;
-var dist=Math.sqrt((x-tx)(x-tx)+(y-ty)(y-ty));
-if(dist<20){
-score++;
-tx=Math.random()*360+20;
-ty=Math.random()*360+20;
-updateScore();
-}
-}
-}
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
